@@ -1,1 +1,64 @@
 // TODO
+
+  .button {
+    font-weight: 600;
+    font-size: 1.1rem;
+    line-height: 1.4rem;
+
+    text-align: justify;
+
+    background: transparent;
+    color: var(--pink-600);
+    border: 0;
+    transition: filter 0.2s;
+
+    &:hover{
+      filter:brightness(0.9);
+    }
+  }
+
+.content {
+  margin: 4rem auto;
+  a {
+    display: inline-block;
+
+    strong {
+      font-size: 1.75rem;
+      font-weight: bold;
+      text-align: justify;
+      line-height: 2rem;
+    }
+
+    >p {
+      margin-top: 0.5rem;
+      font-size: 1.2rem;
+      line-height: 1.4rem;
+      text-align: justify;
+      color: var(--gray-100);
+    }
+
+    >div {
+      margin-top: 2rem;
+      display: flex;
+      gap: 1.5rem;
+
+      div{
+        display: flex;
+        gap: 0.6rem;
+        p {
+          font-size: 0.9rem;
+          color: var(--gray-200);
+        }
+      }
+      
+    }
+
+    &+a {
+      margin-top: 3rem;
+    }
+  }
+
+
+
+
+}
