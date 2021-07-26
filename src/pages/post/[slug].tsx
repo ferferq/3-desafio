@@ -15,9 +15,11 @@ import ptBR from 'date-fns/locale/pt-BR';
 import Prismic from '@prismicio/client';
 import { useRouter } from 'next/router';
 import { UtterancesComments } from '../../components/UtterancesComments/index';
+import Link from 'next/link';
 
 interface Post {
   first_publication_date: string | null;
+  uid: string;
   data: {
     title: string;
     subtitle: string;
@@ -34,14 +36,36 @@ interface Post {
   };
 }
 
-interface PostProps {
-  post: Post;
+interface Pages {
+  uid: string;
+  title: string;
 }
 
-export default function Post({ post }: PostProps) {
+interface PostProps {
+  post: Post;
+  pages: Pages[];
+}
+
+interface LinksPageProps {
+  lastPage: Pages[],
+  nextPage: Pages[]
+}
+
+export default function Post({ post, pages }: PostProps) {
   const router = useRouter();
   const [postConverted, setPostConverted] = useState({} as Post);
+  const [linksPage, setLinksPage] = useState({} as LinksPageProps)
 
+  useEffect(() => {
+    const productIndex = pages.findIndex(page => page.uid === post.uid);
+    if (productIndex < 0) return;
+
+    const newLinksPage = {
+      lastPage: productIndex > 0 ? pages.splice(productIndex - 1, 1) : null,
+      nextPage: productIndex + 1 > pages.length ? null : pages.splice(productIndex + 1, 1),
+    }
+    setLinksPage(newLinksPage)
+  }, [pages]);
   if (router.isFallback) {
     return (
       <>
@@ -142,8 +166,34 @@ export default function Post({ post }: PostProps) {
           </section>
         </div>
       </main>
+      <div className={`${styles.footer} ${commonStyles.container}`}>
+        <div className={styles.pages}>
+          {
+            linksPage.lastPage ?
+              <div className={`${styles.content} ${commonStyles.right}`}>
+                <p>{linksPage.lastPage[0]?.title}</p>
+                <Link href={`/post/${linksPage.lastPage[0]?.uid}`}>
+                  <a>Post anterior</a>
+                </Link>
+              </div>
+              :
+              ''
+          }
+          {
+            linksPage.nextPage ?
+              <div className={`${styles.content} ${styles.left}`}>
+                <p>{linksPage.nextPage[0]?.title}</p>
+                <Link href={`/post/${linksPage.nextPage[0]?.uid}`}>
+                  <a>Próximo post</a>
+                </Link>
+              </div>
+              :
+              ''
+          }
+        </div>
+        <UtterancesComments />
+      </div>
 
-      <UtterancesComments />
     </>
   )
 }
@@ -169,12 +219,31 @@ export const getStaticPaths: GetStaticPaths = async () => {
   }
 }
 
+
+
 export const getStaticProps: GetStaticProps = async ({ params }) => {
   const { slug } = params;
 
   const prismic = getPrismicClient()
 
   const response = await prismic.getByUID('posts', String(slug), {});
+
+  const setPages = await prismic.query([
+    Prismic.predicates.at('document.type', 'posts')
+  ], {
+    fetch: [],
+    pageSize: 100,
+  })
+
+  const setPagesFormated: Pages[] = setPages.results.map(r => {
+    return (
+      {
+        uid: r.uid,
+        title: r.data.title,
+      }
+    )
+  })
+
 
   //console.log(JSON.stringify(response, null, 2))
 
@@ -200,6 +269,7 @@ export const getStaticProps: GetStaticProps = async ({ params }) => {
   return ({
     props: {
       post,
+      pages: setPagesFormated
     },
     redirect: 60 * 30, //30 minutos
   })

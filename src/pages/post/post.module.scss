@@ -60,3 +60,39 @@
     }
   }
 }
+
+.footer{
+  margin-bottom: 3rem;
+
+  .pages{
+    display:flex;
+    align-items:center;
+    margin: 3rem auto;
+    div:last-child{
+      
+    }
+
+    .left{
+      margin-left: auto;
+      text-align: right;
+    }
+
+    .right{
+      margin-right: auto;
+      text-align: left;
+    }
+    .content {
+      p {
+        font-size: 1.1rem;
+        font-weight: 1.6rem;
+        color: var(--gray-100);
+        margin-bottom: 1rem;
+      }
+    }
+
+    a {
+      text-decoration: none;
+      color: var(--pink-600);
+    }
+  }
+}
