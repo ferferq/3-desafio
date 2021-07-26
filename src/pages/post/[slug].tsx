@@ -14,6 +14,7 @@ import { format } from 'date-fns';
 import ptBR from 'date-fns/locale/pt-BR';
 import Prismic from '@prismicio/client';
 import { useRouter } from 'next/router';
+import { UtterancesComments } from '../../components/UtterancesComments/index';
 
 interface Post {
   first_publication_date: string | null;
@@ -141,6 +142,8 @@ export default function Post({ post }: PostProps) {
           </section>
         </div>
       </main>
+
+      <UtterancesComments />
     </>
   )
 }
